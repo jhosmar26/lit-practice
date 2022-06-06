@@ -19,31 +19,55 @@ export class EitTodoList extends LitElement {
         background-color: #eee;
         padding: 1rem;
       }
+
+      ul {
+        margin: 1rem 0;
+        padding: 0;
+      }
+
+      li {
+        display: flex;
+        align-items: center;
+        list-style-type: none;
+        margin-bottom: 0.8rem;
+      }
+
+      li span {
+        margin-left: 0.5rem;
+      }
     `,
   ];
 
   static properties = {
-    loggedIn: { type: Boolean },
-    role: { type: String },
+    completed: { type: Boolean },
+    todos: { type: Array },
   };
 
   constructor() {
     super();
-    this.loggedIn = false;
-    this.role = "administrator";
+    this.completed = false;
+    this.todos = [
+      {
+        title: "Comprar en el super",
+        completed: false,
+      },
+      {
+        title: "Llamar a mamá",
+        completed: false,
+      },
+      {
+        title: "descongelar la lasaña",
+        completed: true,
+      },
+    ];
   }
   render() {
-    return html`
-      <button @click=${this.changeLoggedIn}>Cambiar logeo</button>
-      ${this.loggedIn
-        ? html`
-            ${this.loggedIn ? "si está logeado" : "no logeado"}
-            ${this.headingTemplate}
-            <eit-todo-search></eit-todo-search>
-            ${this.bodyTemplate} ${this.sayHello(this.role)}
-          `
-        : `no está logeado`}
-    `;
+    return html` <button @click=${this.changeCompleted}>
+        Cambiar completado
+      </button>
+      ${this.headingTemplate}
+      <eit-todo-search></eit-todo-search>
+      ${this.bodyTemplate}`;
   }
 
   get headingTemplate() {
@@ -51,32 +75,20 @@ export class EitTodoList extends LitElement {
   }
 
   get bodyTemplate() {
-    return html`${icons.done}`;
-  }
-
-  changeLoggedIn() {
-    this.loggedIn = !this.loggedIn;
-  }
-
-  sayHello(role) {
-    switch (role) {
-      case "administrator":
-        return html`Hola <b>Administrador</b>`;
-      case "premium":
-        return html`Hola usuario <i>premium</i>`;
-      default:
-        return "Hola usuario común";
-    }
-  }
-
-  get userPremiumTemplate() {
     return html`
-      <p>Este es el menú para el usuario premium</p>
       <ul>
-        <li>Uno</li>
-        <li>Dos</li>
+        ${this.todos.map(
+          (todo) => html` <li>
+            ${todo.completed ? icons.done : icons.fiber_manual_record}
+            <span>${todo.title}</span>
+          </li>`
+        )}
       </ul>
     `;
+  }
+
+  changeCompleted() {
+    this.completed = !this.completed;
   }
 }
 customElements.define("eit-todo-list", EitTodoList);
